@@ -1,85 +1,67 @@
-# Kubernetes Microservices Monitoring with Prometheus & Grafana
+# K8s Microservices Monitoring Project
 
 ## 📌 Project Overview
-This project demonstrates a **scalable microservices architecture** deployed on **Kubernetes** with monitoring capabilities powered by **Prometheus** and **Grafana**. The system ensures observability by collecting and visualizing metrics from various microservices.
+This project is a **scalable microservices architecture** built using **Python (Flask)**, containerized with **Docker**, orchestrated with **Kubernetes (K8s)**, and monitored using **Prometheus and Grafana**. It demonstrates how to deploy microservices efficiently and observe system metrics in a cloud-native environment.
 
 ## 🏗 Architecture
-The project follows a **microservices architecture** where different services communicate through REST APIs. Monitoring is set up to track resource usage, service health, and performance trends.
+The application consists of multiple **Flask-based microservices** running inside **Kubernetes pods**, with the following components:
 
-### Key Components:
-1. **Microservices**: Multiple containerized services running independently.
-2. **API Gateway**: Handles routing, authentication, and load balancing.
-3. **Kubernetes Cluster**: Manages deployment, scaling, and networking.
-4. **Prometheus**: Collects and stores metrics from microservices.
-5. **Grafana**: Visualizes data from Prometheus using dashboards.
-6. **Node Exporter**: Provides system-level metrics.
-7. **Kube State Metrics**: Collects Kubernetes resource metrics.
+### 🔹 Microservices
+1. **User Service** - Handles user authentication and management.
+2. **Order Service** - Manages customer orders.
+3. **Payment Service** - Processes payments securely.
 
-## 🛠 Tech Stack
-- **Backend**: Python (FastAPI / Flask)
-- **Containerization**: Docker
-- **Orchestration**: Kubernetes (Minikube / K3s / Cloud Kubernetes Service)
-- **Monitoring**: Prometheus, Grafana, Node Exporter
-- **Storage**: Persistent Volumes (for Grafana dashboards)
-- **Messaging Queue (Optional)**: Redis + BullMQ
+Each microservice exposes RESTful APIs and communicates via internal **Kubernetes services**.
 
-## 🚀 Setup Instructions
-### 1️⃣ Prerequisites
-- Install **Docker** and **Kubernetes (Minikube / Kind)**
-- Install **Helm** (for Prometheus & Grafana deployment)
-- Install **kubectl** for managing Kubernetes cluster
+### 🔹 Infrastructure & Deployment
+- **Docker**: Each microservice is packaged into a separate Docker container.
+- **Kubernetes**: Manages containerized microservices with separate pods.
+- **Helm Charts**: Simplifies deployment and configuration.
+- **Service Mesh (Optional)**: Istio/Linkerd for enhanced observability and security.
 
-### 2️⃣ Clone the Repository
-```bash
-git clone https://github.com/your-username/microservices-monitoring.git
-cd microservices-monitoring
-```
+### 🔹 Monitoring Stack
+- **Prometheus**: Collects application and system metrics.
+- **Grafana**: Provides a dashboard for visualization.
+- **Node Exporter**: Captures host-level metrics.
+- **Kube State Metrics**: Exposes Kubernetes resource metrics.
 
-### 3️⃣ Deploy Microservices
-Deploy your microservices using Kubernetes manifests:
-```bash
-kubectl apply -f k8s/
-```
+## 🚀 Installation & Setup
+### Prerequisites:
+- Install **Docker** and **Minikube**
+- Install **kubectl** and **Helm**
 
-### 4️⃣ Deploy Monitoring Stack
-Use **Helm** to install Prometheus and Grafana:
-```bash
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo update
-helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
-```
+### Steps to Deploy:
+1. **Clone the Repository**
+   ```sh
+   git clone https://github.com/Saahiti402/k8s-monitoring.git
+   cd k8s-monitoring
+   ```
 
-### 5️⃣ Access Grafana Dashboard
-#### **Find Grafana Service Details**
-```bash
-kubectl get svc -n monitoring
-```
-Check for **NodePort** and access Grafana via:
-```
-http://localhost:<NodePort>
-```
-#### **Retrieve Grafana Admin Password**
-```bash
-kubectl get secret --namespace monitoring grafana-admin -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
-```
-Login with **admin** and the retrieved password.
+2. **Build and Push Docker Images**
+   ```sh
+   docker build -t user-service ./user-service
+   docker build -t order-service ./order-service
+   docker build -t payment-service ./payment-service
+   ```
 
-### 6️⃣ Configure Dashboards
-- Import **predefined Grafana dashboards** for Kubernetes & Prometheus.
-- Set **Prometheus** as the data source in Grafana.
+3. **Start Minikube & Deploy Services**
+   ```sh
+   minikube start
+   kubectl apply -f k8s/
+   ```
 
-## 📊 Monitoring Setup
-- **Prometheus** scrapes metrics from microservices and Kubernetes nodes.
-- **Grafana** visualizes CPU, Memory, Requests, and more.
-- Alerts can be set up in Prometheus Alertmanager for **incident detection**.
+4. **Deploy Monitoring Stack with Helm**
+   ```sh
+   helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
+   helm install grafana grafana/grafana -n monitoring
+   ```
 
-## 🔥 Future Enhancements
-- **Service Mesh Integration** (Istio / Linkerd for better traffic control)
-- **Logging with ELK Stack** (Elasticsearch, Logstash, Kibana)
-- **Auto-Scaling** based on Prometheus metrics
+5. **Port Forward Grafana Dashboard**
+   ```sh
+   kubectl port-forward svc/grafana -n monitoring 3000:3000
+   ```
+   Open Grafana at: [http://localhost:3000](http://localhost:3000)
 
----
-### 🎯 Conclusion
-This project showcases how to **deploy, monitor, and scale microservices** using **Kubernetes, Prometheus, and Grafana**. With observability in place, maintaining system health and debugging issues becomes significantly easier.
-
-
+## 📊 Observability & Alerts
+- Pre-configured **Grafana dashboards** to visualize API response times, request rates, and CPU/memory usage.
+- **Prometheus alerts** configured to trigger when resource limits exceed thresholds.
