@@ -1,0 +1,10 @@
+# Ignore Kubernetes and temporary files
+*.log
+*.lock
+__pycache__/
+node_modules/
+*.pem
+*.crt
+*.key
+.env
+
